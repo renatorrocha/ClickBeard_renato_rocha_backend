@@ -2,11 +2,16 @@
   "name": "click-beard-backend",
   "version": "1.0.50",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "bun run --watch src/index.ts"
+    "dev": "bun run --watch src/index.ts",
+    "db:generate": "prisma generate",
+    "db:pull": "prisma db pull",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
-    "elysia": "latest"
+    "@prisma/client": "6.7.0",
+    "elysia": "latest",
+    "prisma": "^6.7.0"
   },
   "devDependencies": {
     "bun-types": "latest"
