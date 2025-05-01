@@ -15,14 +15,13 @@ export const authRoutes = new Elysia({
   )
   .post(
     "/sign-in",
-    async ({ body, jwt }) => {
-      const payload = await signIn(body.email, body.password);
+    async ({ body, jwt, set }) => {
+      const payload = await signIn(body, set);
 
       const token = await jwt.sign({
-        sub: payload,
+        sub: payload.id,
+        role: payload.role,
       });
-
-      console.log(token);
 
       return {
         token: token,
@@ -39,9 +38,7 @@ export const authRoutes = new Elysia({
   .post(
     "/sign-up",
     async ({ body, set }) => {
-      const user = await signUp(body);
-
-      set.status = 201;
+      const user = await signUp(body, set);
 
       return {
         user: user,

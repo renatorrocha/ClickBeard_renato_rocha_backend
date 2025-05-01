@@ -1,12 +1,34 @@
 import { db } from "@/database";
-import { signUpModelType } from "@/models/auth";
+import { signInModelType, signUpModelType } from "@/models/auth";
+import { Context } from "elysia";
+export const signIn = async (body: signInModelType, set: Context["set"]) => {
+  const user = await db.user.findUnique({
+    where: {
+      email: body.email,
+    },
+  });
 
-export const signIn = async (email: string, password: string) => {
-  const jwtToken = "123";
-  return jwtToken;
+  if (!user) {
+    set.status = 400;
+    throw new Error("Email or password is incorrect");
+  }
+
+  const isPasswordValid = await Bun.password.verify(
+    body.password,
+    user.password
+  );
+
+  if (!isPasswordValid) {
+    set.status = 400;
+    throw new Error("Email or password is incorrect");
+  }
+
+  set.status = 200;
+
+  return user;
 };
 
-export const signUp = async (body: signUpModelType) => {
+export const signUp = async (body: signUpModelType, set: Context["set"]) => {
   const userExist = await db.user.findUnique({
     where: {
       email: body.email,
@@ -14,6 +36,7 @@ export const signUp = async (body: signUpModelType) => {
   });
 
   if (userExist) {
+    set.status = 400;
     throw new Error("Email already exists");
   }
 
@@ -26,6 +49,8 @@ export const signUp = async (body: signUpModelType) => {
       name: body.name,
     },
   });
+
+  set.status = 201;
 
   return {
     id: user.id,
