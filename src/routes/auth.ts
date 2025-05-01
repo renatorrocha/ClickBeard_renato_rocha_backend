@@ -1,18 +1,31 @@
 import Elysia, { t } from "elysia";
 import { signIn, signUp } from "../services/auth.service";
 import { signInModel, signUpModel } from "../models/auth";
+import jwt from "@elysiajs/jwt";
 
 export const authRoutes = new Elysia({
   prefix: "/auth",
   tags: ["auth"],
 })
+  .use(
+    jwt({
+      name: "jwt",
+      secret: Bun.env.JWT_SECRET!,
+    })
+  )
   .post(
     "/sign-in",
-    async ({ body }) => {
+    async ({ body, jwt }) => {
       const payload = await signIn(body.email, body.password);
 
+      const token = await jwt.sign({
+        sub: payload,
+      });
+
+      console.log(token);
+
       return {
-        token: payload,
+        token: token,
       };
     },
     {
@@ -25,11 +38,13 @@ export const authRoutes = new Elysia({
   )
   .post(
     "/sign-up",
-    async ({ body }) => {
-      const payload = await signUp(body.email, body.password, body.name);
+    async ({ body, set }) => {
+      const user = await signUp(body);
+
+      set.status = 201;
 
       return {
-        token: payload,
+        user: user,
       };
     },
     {
