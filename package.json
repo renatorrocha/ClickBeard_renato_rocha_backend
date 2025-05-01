@@ -6,7 +6,8 @@
     "db:generate": "prisma generate",
     "db:pull": "prisma db pull",
     "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "build": "bun build --target bun --outfile dist/index.js src/index.ts"
   },
   "dependencies": {
     "@elysiajs/swagger": "^1.2.2",
