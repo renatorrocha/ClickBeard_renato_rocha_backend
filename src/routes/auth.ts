@@ -18,13 +18,13 @@ export const authRoutes = new Elysia({
     async ({ body, jwt, set }) => {
       const payload = await signIn(body, set);
 
-      const token = await jwt.sign({
+      const accessToken = await jwt.sign({
         sub: payload.id,
         role: payload.role,
       });
 
       return {
-        token: token,
+        accessToken: accessToken,
       };
     },
     {
