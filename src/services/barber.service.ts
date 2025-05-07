@@ -72,3 +72,22 @@ export async function createBarber(barber: { name: string, document: string, spe
     document: newBarber.document,
   };
 }
+
+export async function deleteBarber(barberId: string) {
+  // Primeiro excluir os agendamentos
+  await db.appointment.deleteMany({
+    where: { barberId: barberId }
+  });
+
+  // Depois excluir as especialidades
+  await db.barberSpecialty.deleteMany({
+    where: { barberId: barberId }
+  });
+
+  // Por fim, excluir o barbeiro
+  const barber = await db.barber.delete({
+    where: { id: barberId }
+  });
+
+  return barber;
+}

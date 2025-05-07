@@ -1,5 +1,5 @@
 import Elysia, { t } from "elysia";
-import { createBarber, listBarbers } from "../services/barber.service";
+import { createBarber, deleteBarber, listBarbers } from "../services/barber.service";
 import { isAuthenticated } from "@/middlewares/auth";
 
 export const barbersRoutes = new Elysia({
@@ -44,6 +44,20 @@ export const barbersRoutes = new Elysia({
       detail: {
         summary: "Create a new barber",
         description: "Creates a new barber with the given name, document, and specialties",
+      },
+    }
+  ).delete(
+    "/:id",
+    async ({ params }) => {
+      return await deleteBarber(params.id);
+    },
+    {
+      params: t.Object({
+        id: t.String(),
+      }),
+      detail: {
+        summary: "Delete a barber",
+        description: "Deletes a barber with the given id",
       },
     }
   );
