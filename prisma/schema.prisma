@@ -9,32 +9,33 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  name      String
-  email     String    @unique
-  password  String
-  role      String    @default("CLIENT")
-  createdAt DateTime  @default(now())
-  bookings  Booking[]
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  password     String
+  role         String        @default("CLIENT")
+  createdAt    DateTime      @default(now())
+  appointments Appointment[]
 
   @@map("users")
 }
 
 model Barber {
-  id          String            @id @default(cuid())
-  name        String
-  document    String            @unique
-  createdAt   DateTime          @default(now())
-  specialties BarberSpecialty[]
-  bookings    Booking[]
+  id           String            @id @default(cuid())
+  name         String
+  document     String            @unique
+  createdAt    DateTime          @default(now())
+  specialties  BarberSpecialty[]
+  appointments Appointment[]
 
   @@map("barbers")
 }
 
 model specialties {
-  id      String            @id @default(cuid())
-  label   String            @unique
-  barbers BarberSpecialty[]
+  id          String            @id @default(cuid())
+  label       String            @unique
+  barbers     BarberSpecialty[]
+  Appointment Appointment[]
 
   @@map("specialties")
 }
@@ -49,17 +50,22 @@ model BarberSpecialty {
   @@map("barber_specialties")
 }
 
-model Booking {
-  id         String    @id @default(cuid())
-  date       DateTime
-  canceledAt DateTime?
-  userId     String
-  barberId   String
-  barber     Barber    @relation(fields: [barberId], references: [id])
-  user       User      @relation(fields: [userId], references: [id])
+model Appointment {
+  id          String    @id @default(cuid())
+  date        DateTime
+  canceledAt  DateTime?
+  specialtyId String
+  userId      String
+  barberId    String
+  createdAt   DateTime  @default(now())
+
+  barber    Barber      @relation(fields: [barberId], references: [id])
+  user      User        @relation(fields: [userId], references: [id])
+  specialty specialties @relation(fields: [specialtyId], references: [id])
 
   @@unique([barberId, date])
   @@index([userId])
   @@index([barberId])
-  @@map("bookings")
+  @@index([specialtyId])
+  @@map("appointments")
 }
