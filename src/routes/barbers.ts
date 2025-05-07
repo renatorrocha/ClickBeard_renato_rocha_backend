@@ -1,5 +1,5 @@
-import Elysia from "elysia";
-import { listBarbers } from "../services/barber.service";
+import Elysia, { t } from "elysia";
+import { createBarber, listBarbers } from "../services/barber.service";
 import { isAuthenticated } from "@/middlewares/auth";
 
 export const barbersRoutes = new Elysia({
@@ -17,5 +17,19 @@ export const barbersRoutes = new Elysia({
         summary: "List all barbers",
         description: "Returns a list of all barbers",
       },
+    }
+  )
+  .post(
+    "/",
+    async ({ body }) => {
+      const { name, document, specialties } = body;
+      return await createBarber(name, document, specialties);
+    },
+    {
+      body: t.Object({
+        name: t.String(),
+        document: t.String(),
+        specialties: t.Array(t.String()),
+      }),
     }
   );
