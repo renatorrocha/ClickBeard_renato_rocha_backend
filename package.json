@@ -3,6 +3,7 @@
   "version": "1.0.50",
   "scripts": {
     "dev": "bun run --watch src/index.ts",
+    "start": "bun run dist/index.js",
     "db:generate": "prisma generate",
     "db:pull": "prisma db pull",
     "db:migrate": "prisma migrate dev",
