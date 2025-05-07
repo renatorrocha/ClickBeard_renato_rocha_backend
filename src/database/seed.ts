@@ -13,7 +13,7 @@ async function seed() {
     ];
 
     for (const specialty of specialties) {
-      await db.specialty.upsert({
+      await db.specialties.upsert({
         where: { label: specialty.label },
         update: {},
         create: specialty,

@@ -21,28 +21,29 @@ model User {
 }
 
 model Barber {
-  id           String            @id @default(cuid())
-  name         String
-  document     String            @unique
-  specialities BarberSpecialty[]
-  bookings     Booking[]
+  id          String            @id @default(cuid())
+  name        String
+  document    String            @unique
+  createdAt   DateTime          @default(now())
+  specialties BarberSpecialty[]
+  bookings    Booking[]
 
   @@map("barbers")
 }
 
-model Specialty {
+model specialties {
   id      String            @id @default(cuid())
   label   String            @unique
   barbers BarberSpecialty[]
 
-  @@map("specialities")
+  @@map("specialties")
 }
 
 model BarberSpecialty {
   barberId    String
   specialtyId String
-  specialty   Specialty @relation(fields: [specialtyId], references: [id])
-  barber      Barber    @relation(fields: [barberId], references: [id])
+  specialty   specialties @relation(fields: [specialtyId], references: [id])
+  barber      Barber      @relation(fields: [barberId], references: [id])
 
   @@id([barberId, specialtyId])
   @@map("barber_specialties")

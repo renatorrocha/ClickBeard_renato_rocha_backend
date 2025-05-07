@@ -21,17 +21,26 @@ export const barbersRoutes = new Elysia({
   )
   .post(
     "/",
-    async ({ body }) => {
-console.log(body)
-      const { name, document, specialities } = body;
+    async ({ body, set }) => {
+      const { name, document, specialties } = body;
 
-      return await createBarber(name, document, specialities);
+      const barber = await createBarber({ name, document, specialties }, set);
+
+      return {
+        id: barber.id,
+        name: barber.name,
+        document: barber.document,
+      };
     },
     {
       body: t.Object({
         name: t.String(),
         document: t.String(),
-        specialities: t.Array(t.String()),
+        specialties: t.Array(t.String()),
       }),
+      detail: {
+        summary: "Create a new barber",
+        description: "Creates a new barber with the given name, document, and specialties",
+      },
     }
   );

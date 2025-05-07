@@ -1,37 +1,67 @@
 import { db } from '@/database';
+import { Context } from 'elysia';
 
 export async function listBarbers() {
-  return [
-    {
-      id: 1,
-      name: "John Doe",
-    },
-  ];
-}
-
-export async function createBarber(name: string, document: string, specialities: string[]) {
-  const specialitiesIds = await db.specialty.findMany({
-    where: {
-      label: {
-        in: specialities,
+  const barbers = await db.barber.findMany({
+    include: {
+      specialties: {
+        include: {
+          specialty: true,
+        },
       },
     },
   });
 
+  const barbersWithSpecialties = barbers.map((barber) => ({
+    id: barber.id,
+    name: barber.name,
+    document: barber.document,
+    specialties: barber.specialties.map((specialty) => ({
+      id: specialty.specialty.id,
+      label: specialty.specialty.label,
+    })),
+    createdAt: new Date(barber.createdAt).toISOString(),
+  }));
 
-  const barber = await db.barber.create({
+  return barbersWithSpecialties;
+}
+
+export async function createBarber(barber: { name: string, document: string, specialties: string[] }, set: Context["set"]) {
+  const { name, document, specialties } = barber;
+
+  const existingBarber = await db.barber.findUnique({
+    where: {
+      document: document,
+    },
+  }); 
+
+  if (existingBarber) {
+    set.status = 400;
+    throw new Error("barbeiro já cadastrado");
+  }
+  const newBarber = await db.barber.create({
     data: {
       name,
       document,
-      specialities: {
-        create: specialities.map((speciality) => ({
+      specialties: {
+        create: specialties.map((specialty) => ({
           specialty: {
-            connect: { id: speciality },
+            connect: { id: specialty },
           },
         })),
       },
     },
   });
 
-  return barber;
+  if (!newBarber) {
+    set.status = 500;
+    throw new Error("Erro ao criar barbeiro");
+  }
+
+  set.status = 201;
+  return {
+    id: newBarber.id,
+    name: newBarber.name,
+    document: newBarber.document,
+  };
 }
