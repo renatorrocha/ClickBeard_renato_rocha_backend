@@ -1,5 +1,4 @@
 import { db } from '@/database';
-import { Context } from 'elysia';
 
 export async function listBarbers() {
   return [
@@ -10,15 +9,24 @@ export async function listBarbers() {
   ];
 }
 
-export async function createBarber(name: string, document: string, specialties: string[]) {
+export async function createBarber(name: string, document: string, specialities: string[]) {
+  const specialitiesIds = await db.specialty.findMany({
+    where: {
+      label: {
+        in: specialities,
+      },
+    },
+  });
+
+
   const barber = await db.barber.create({
     data: {
       name,
       document,
-      specialties: {
-        create: specialties.map((specialty) => ({
+      specialities: {
+        create: specialities.map((speciality) => ({
           specialty: {
-            connect: { id: specialty },
+            connect: { id: speciality },
           },
         })),
       },

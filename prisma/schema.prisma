@@ -21,11 +21,11 @@ model User {
 }
 
 model Barber {
-  id          String            @id @default(cuid())
-  name        String
-  document    String            @unique
-  specialties BarberSpecialty[]
-  bookings    Booking[]
+  id           String            @id @default(cuid())
+  name         String
+  document     String            @unique
+  specialities BarberSpecialty[]
+  bookings     Booking[]
 
   @@map("barbers")
 }
@@ -35,7 +35,7 @@ model Specialty {
   label   String            @unique
   barbers BarberSpecialty[]
 
-  @@map("specialties")
+  @@map("specialities")
 }
 
 model BarberSpecialty {

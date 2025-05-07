@@ -6,7 +6,7 @@ export const barbersRoutes = new Elysia({
   prefix: "/barbers",
   tags: ["barbers"],
 })
-  .use(isAuthenticated)
+  // .use(isAuthenticated)
   .get(
     "/",
     async () => {
@@ -22,14 +22,16 @@ export const barbersRoutes = new Elysia({
   .post(
     "/",
     async ({ body }) => {
-      const { name, document, specialties } = body;
-      return await createBarber(name, document, specialties);
+console.log(body)
+      const { name, document, specialities } = body;
+
+      return await createBarber(name, document, specialities);
     },
     {
       body: t.Object({
         name: t.String(),
         document: t.String(),
-        specialties: t.Array(t.String()),
+        specialities: t.Array(t.String()),
       }),
     }
   );
