@@ -1,15 +1,15 @@
-import { Static, t } from "elysia";
+import { type Static, t } from "elysia";
 
-export const signInModel = t.Object({
+export const loginModel = t.Object({
   email: t.String(),
   password: t.String(),
 });
 
-export const signUpModel = t.Object({
+export const registerModel = t.Object({
   email: t.String(),
   password: t.String(),
   name: t.String(),
 });
 
-export type signInModelType = Static<typeof signInModel>;
-export type signUpModelType = Static<typeof signUpModel>;
+export type loginModelType = Static<typeof loginModel>;
+export type registerModelType = Static<typeof registerModel>;

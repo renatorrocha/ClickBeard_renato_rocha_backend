@@ -1,5 +1,5 @@
 import { db } from '@/database';
-import { Context } from 'elysia';
+import type { Context } from 'elysia';
 
 export async function listBarbers() {
   const barbers = await db.barber.findMany({

@@ -1,6 +1,6 @@
 import { db } from '@/database';
-import { Context } from 'elysia';
-import { appointmentModelType } from '@/models/appointment';
+import type { Context } from 'elysia';
+import type { appointmentModelType } from '@/models/appointment';
 
 export async function listAppointments() {
   const appointments = await db.appointment.findMany({

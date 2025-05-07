@@ -1,7 +1,8 @@
 import { db } from "@/database";
-import { signInModelType, signUpModelType } from "@/models/auth";
-import { Context } from "elysia";
-export const signIn = async (body: signInModelType, set: Context["set"]) => {
+import type { loginModelType, registerModelType } from "@/models/auth";
+import type { Context } from "elysia";
+
+export const login = async (body: loginModelType, set: Context["set"]) => {
   const user = await db.user.findUnique({
     where: {
       email: body.email,
@@ -25,10 +26,15 @@ export const signIn = async (body: signInModelType, set: Context["set"]) => {
 
   set.status = 200;
 
-  return user;
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+  };
 };
 
-export const signUp = async (body: signUpModelType, set: Context["set"]) => {
+export const register = async (body: registerModelType, set: Context["set"]) => {
   const userExist = await db.user.findUnique({
     where: {
       email: body.email,

@@ -1,6 +1,6 @@
-import Elysia, { t } from "elysia";
-import { signIn, signUp } from "../services/auth.service";
-import { signInModel, signUpModel } from "../models/auth";
+import Elysia from "elysia";
+import { login, register } from "../services/auth.service";
+import { loginModel, registerModel } from "../models/auth";
 import jwt from "@elysiajs/jwt";
 
 export const authRoutes = new Elysia({
@@ -10,13 +10,13 @@ export const authRoutes = new Elysia({
   .use(
     jwt({
       name: "jwt",
-      secret: Bun.env.JWT_SECRET!,
+      secret: Bun.env.JWT_SECRET,
     })
   )
   .post(
-    "/sign-in",
+    "/login",
     async ({ body, jwt, set }) => {
-      const payload = await signIn(body, set);
+      const payload = await login(body, set);
 
       const accessToken = await jwt.sign({
         sub: payload.id,
@@ -24,31 +24,37 @@ export const authRoutes = new Elysia({
       });
 
       return {
-        accessToken: accessToken,
+        user: {
+          id: payload.id,
+          email: payload.email,
+          name: payload.name,
+          role: payload.role,
+          token: accessToken,
+        },
       };
     },
     {
-      body: signInModel,
+      body: loginModel,
       detail: {
-        summary: "Sign in",
-        description: "Sign in to the application",
+        summary: "Login",
+        description: "Login to the application",
       },
     }
   )
   .post(
-    "/sign-up",
+    "/register",
     async ({ body, set }) => {
-      const user = await signUp(body, set);
+      const user = await register(body, set);
 
       return {
         user: user,
       };
     },
     {
-      body: signUpModel,
+      body: registerModel,
       detail: {
-        summary: "Sign up",
-        description: "Sign up to the application",
+        summary: "Register",
+        description: "Register to the application",
       },
     }
   );
