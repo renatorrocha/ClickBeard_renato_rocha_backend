@@ -74,20 +74,57 @@ export async function createBarber(barber: { name: string, document: string, spe
 }
 
 export async function deleteBarber(barberId: string) {
-  // Primeiro excluir os agendamentos
   await db.appointment.deleteMany({
     where: { barberId: barberId }
   });
 
-  // Depois excluir as especialidades
   await db.barberSpecialty.deleteMany({
     where: { barberId: barberId }
   });
 
-  // Por fim, excluir o barbeiro
   const barber = await db.barber.delete({
     where: { id: barberId }
   });
 
   return barber;
 }
+
+export async function updateBarber(barberId: string, barber: { name: string, document: string, specialties: string[] }) {
+  const { name, document, specialties } = barber;
+
+  await db.barberSpecialty.deleteMany({
+    where: { barberId: barberId }
+  });
+
+  const updatedBarber = await db.barber.update({
+    where: { id: barberId },
+    data: {
+      name,
+      document,
+      specialties: {
+        create: specialties.map((specialty) => ({
+          specialty: {
+            connect: { id: specialty },
+          },
+        })),
+      },
+    },
+  });
+
+  return updatedBarber;
+}
+
+export async function getBarber(barberId: string) {
+  const barber = await db.barber.findUnique({
+    where: { id: barberId },
+    include: {
+      specialties: {
+        include: {
+          specialty: true,
+        },
+      },
+    },
+  });
+  return barber;
+}
+
