@@ -8,71 +8,64 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// User model
 model User {
-  id        String    @id @default(cuid())
-  name      String
-  email     String    @unique
-  password  String
-  role      Role      @default(CLIENT)
-  createdAt DateTime  @default(now())
-  bookings  Booking[]
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  password     String
+  role         String        @default("CLIENT")
+  createdAt    DateTime      @default(now())
+  appointments Appointment[]
 
   @@map("users")
 }
 
-// Barber model
 model Barber {
-  id          String            @id @default(cuid())
-  name        String
-  document    String            @unique
-  specialties BarberSpecialty[]
-  bookings    Booking[]
+  id           String            @id @default(cuid())
+  name         String
+  document     String            @unique
+  createdAt    DateTime          @default(now())
+  specialties  BarberSpecialty[]
+  appointments Appointment[]
 
   @@map("barbers")
 }
 
-// Specialty model
-model Specialty {
-  id      String            @id @default(cuid())
-  label   String            @unique
-  barbers BarberSpecialty[]
+model specialties {
+  id          String            @id @default(cuid())
+  label       String            @unique
+  barbers     BarberSpecialty[]
+  Appointment Appointment[]
 
   @@map("specialties")
 }
 
-// BarberSpecialty model
 model BarberSpecialty {
   barberId    String
   specialtyId String
-
-  barber    Barber    @relation(fields: [barberId], references: [id])
-  specialty Specialty @relation(fields: [specialtyId], references: [id])
+  specialty   specialties @relation(fields: [specialtyId], references: [id])
+  barber      Barber      @relation(fields: [barberId], references: [id])
 
   @@id([barberId, specialtyId])
   @@map("barber_specialties")
 }
 
-// Booking model
-model Booking {
-  id         String    @id @default(cuid())
-  date       DateTime
-  canceledAt DateTime?
-  userId     String
-  barberId   String
+model Appointment {
+  id          String    @id @default(cuid())
+  date        DateTime
+  canceledAt  DateTime?
+  specialtyId String
+  userId      String
+  barberId    String
+  createdAt   DateTime  @default(now())
 
-  user   User   @relation(fields: [userId], references: [id])
-  barber Barber @relation(fields: [barberId], references: [id])
+  barber    Barber      @relation(fields: [barberId], references: [id])
+  user      User        @relation(fields: [userId], references: [id])
+  specialty specialties @relation(fields: [specialtyId], references: [id])
 
   @@unique([barberId, date])
   @@index([userId])
   @@index([barberId])
-  @@map("bookings")
-}
-
-// Role enum
-enum Role {
-  ADMIN
-  CLIENT
-  // BARBER 
+  @@index([specialtyId])
+  @@map("appointments")
 }

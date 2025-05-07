@@ -1,18 +1,21 @@
-import { barbersRoutes } from "./routes/barbers";
-import { appointmentsRoutes } from "./routes/appointments";
-import { usersRoutes } from "./routes/users";
 import Elysia from "elysia";
+import { swagger } from "@/plugins/swagger";
+import { routes } from "@/routes";
+import { jwt } from "@/plugins/jwt";
+import cors from '@elysiajs/cors';
+import { logger } from '@grotto/logysia';
 
 export const app = new Elysia()
-  .get("/health-check", () => "OK")
+  .use(swagger)
+  .use(jwt)
+  .use(logger())
+  .use(cors({
+    origin: ['http://localhost:3000', 'http://localhost:5173'],
+    credentials: true,
+  }))
+  .use(routes)
 
-  .use(barbersRoutes)
-
-  .use(appointmentsRoutes)
-
-  .use(usersRoutes);
-
-app.listen(3000);
+  .listen(Bun.env.PORT || 3000);
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
