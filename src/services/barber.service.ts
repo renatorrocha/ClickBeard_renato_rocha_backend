@@ -1,8 +1,15 @@
 import { db } from '@/database';
 import type { Context } from 'elysia';
 
-export async function listBarbers() {
+export async function listBarbers(specialtyId?: string) {
   const barbers = await db.barber.findMany({
+    where: specialtyId ? {
+      specialties: {
+        some: {
+          specialtyId: specialtyId
+        }
+      }
+    } : undefined,
     include: {
       specialties: {
         include: {
@@ -33,7 +40,7 @@ export async function createBarber(barber: { name: string, document: string, spe
     where: {
       document: document,
     },
-  }); 
+  });
 
   if (existingBarber) {
     set.status = 400;

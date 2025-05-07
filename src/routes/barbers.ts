@@ -6,13 +6,16 @@ export const barbersRoutes = new Elysia({
   prefix: "/barbers",
   tags: ["barbers"],
 })
-  // .use(isAuthenticated)
+  .use(isAuthenticated)
   .get(
     "/",
-    async () => {
-      return await listBarbers();
+    async ({ query }) => {
+      return await listBarbers(query.specialtyId);
     },
     {
+      query: t.Object({
+        specialtyId: t.Optional(t.String()),
+      }),
       detail: {
         summary: "List all barbers",
         description: "Returns a list of all barbers",
