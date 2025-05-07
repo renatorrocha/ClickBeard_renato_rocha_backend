@@ -128,3 +128,15 @@ export async function getBarber(barberId: string) {
   return barber;
 }
 
+export async function getBarberAppointments(barberId: string) {
+  const appointments = await db.appointment.findMany({
+    where: { barberId: barberId },
+    include: {
+      user: true,
+      specialty: true,
+    },
+  });
+
+  return appointments;
+}
+
